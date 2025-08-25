@@ -1,0 +1,9 @@
+# Node modules
+node_modules
+
+# Env file
+.env
+
+# Prisma output + local dev DB (אם רלוונטי)
+generated/prisma
+prisma/dev.db
