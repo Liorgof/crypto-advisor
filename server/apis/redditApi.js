@@ -1,6 +1,11 @@
 const axios = require("axios");
+const fallbackMemes = require("../data/fallbackMemes.json");
 
-// Fetch random meme from cryptomemes
+function getFallbackMeme() {
+  return fallbackMemes[Math.floor(Math.random() * fallbackMemes.length)];
+}
+
+// Fetch random meme from Reddit or fallback to static list
 exports.getMeme = async () => {
   try {
     const { data } = await axios.get(
@@ -14,6 +19,7 @@ exports.getMeme = async () => {
 
     const posts = data?.data?.children?.map((p) => p.data) || [];
 
+    // Try Reddit preview images first
     const withPreview = posts.filter(
       (d) => d?.preview?.images?.[0]?.source?.url
     );
@@ -22,6 +28,7 @@ exports.getMeme = async () => {
       return pick.preview.images[0].source.url.replace(/&amp;/g, "&");
     }
 
+    // Fallback to direct image links
     const withDirectImg = posts.filter((d) =>
       (d.url_overridden_by_dest || "").match(/\.(jpg|jpeg|png)$/i)
     );
@@ -31,9 +38,11 @@ exports.getMeme = async () => {
       return (pick.url_overridden_by_dest || "").replace(/&amp;/g, "&");
     }
 
-    return null;
+    // No valid images found on Reddit
+    console.warn("No Reddit memes found, using fallback.");
+    return getFallbackMeme();
   } catch (e) {
     console.error("Reddit meme error:", e.message);
-    return null;
+    return getFallbackMeme();
   }
 };
