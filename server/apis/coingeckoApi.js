@@ -9,23 +9,20 @@ const coingeckoMap = {
   ADA: "cardano",
 };
 
-// Simple in-memory cache
-let cachedPrices = null;
-let cacheTimestamp = 0;
+// In-memory cache per unique asset combination
+const priceCache = {};
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 exports.getPrices = async (prefs) => {
   const now = Date.now();
 
-  const ids = prefs.assets
-    .map((s) => coingeckoMap[s])
-    .filter(Boolean)
-    .join(",");
+  const idsArray = prefs.assets.map((s) => coingeckoMap[s]).filter(Boolean);
+  const idsKey = idsArray.sort().join(",");
 
-  if (!ids) return {};
+  if (!idsKey) return {};
 
-  if (cachedPrices && now - cacheTimestamp < CACHE_TTL_MS) {
-    return cachedPrices;
+  if (priceCache[idsKey] && now - priceCache[idsKey].timestamp < CACHE_TTL_MS) {
+    return priceCache[idsKey].data;
   }
 
   try {
@@ -33,7 +30,7 @@ exports.getPrices = async (prefs) => {
       "https://api.coingecko.com/api/v3/simple/price",
       {
         params: {
-          ids,
+          ids: idsKey,
           vs_currencies: "usd",
           include_last_updated_at: true,
         },
@@ -44,9 +41,7 @@ exports.getPrices = async (prefs) => {
       }
     );
 
-    cachedPrices = data;
-    cacheTimestamp = now;
-
+    priceCache[idsKey] = { data, timestamp: now };
     return data;
   } catch (e) {
     console.error("getPrices failed:", e.message);
@@ -59,6 +54,11 @@ exports.getPrices = async (prefs) => {
       cardano: { usd: 0.4 },
     };
 
-    return fallback;
+    // Filter fallback based on requested assets
+    const filteredFallback = Object.fromEntries(
+      idsArray.map((id) => [id, fallback[id]]).filter(([, val]) => val)
+    );
+
+    return filteredFallback;
   }
 };
