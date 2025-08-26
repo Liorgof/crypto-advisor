@@ -35,11 +35,8 @@ export default function Dashboard() {
     };
   }, []);
 
-  const vote = async (section, value) => {
-    const payload = { section, value };
-    if (section === "AI_INSIGHT" && data?.aiInsight) {
-      payload.content = data.aiInsight;
-    }
+  const vote = async (section, value, content) => {
+    const payload = { section, value, content };
 
     try {
       const res = await fetch(
@@ -57,7 +54,10 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Vote failed");
       setData((prev) => ({
         ...prev,
-        votes: { ...prev.votes, [section]: value },
+        votes: {
+          ...prev.votes,
+          [section]: { value, content },
+        },
       }));
     } catch (err) {
       console.error("Vote error:", err.message);
@@ -97,6 +97,7 @@ export default function Dashboard() {
             icon={<Brain size={20} />}
             votes={votes}
             onVote={vote}
+            content={aiInsight}
             color="bg-purple-800"
           >
             <p>{aiInsight}</p>
@@ -106,8 +107,6 @@ export default function Dashboard() {
             section="PRICE"
             title="Coin Prices"
             icon={<Coins size={20} />}
-            votes={votes}
-            onVote={vote}
           >
             <PriceList prices={prices} />
           </DashboardSection>
@@ -118,6 +117,7 @@ export default function Dashboard() {
             icon={<Smile size={20} />}
             votes={votes}
             onVote={vote}
+            content={memeUrl}
           >
             <img
               src={memeUrl}
@@ -132,6 +132,7 @@ export default function Dashboard() {
             icon={<Newspaper size={20} />}
             votes={votes}
             onVote={vote}
+            content={JSON.stringify(news)}
           >
             <NewsList news={news} />
           </DashboardSection>
