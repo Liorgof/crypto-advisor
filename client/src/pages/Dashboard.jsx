@@ -86,6 +86,7 @@ export default function Dashboard() {
 
   const usingFallbackPrices = !Object.values(prices ?? {})?.[0]
     ?.last_updated_at;
+  const usingFallbackNews = (news?.[0]?.domain || "").includes("mocknews.com");
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -143,6 +144,12 @@ export default function Dashboard() {
             onVote={vote}
             content={JSON.stringify(news)}
           >
+            {usingFallbackNews && (
+              <div className="text-yellow-400 text-sm mb-2">
+                Live news feed is temporarily unavailable. Displaying fallback
+                content.
+              </div>
+            )}
             <NewsList news={news} />
           </DashboardSection>
         </div>
