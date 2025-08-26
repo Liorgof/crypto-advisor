@@ -96,7 +96,7 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold mb-6">Your Crypto Dashboard</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          {selectedContentTypes.includes("Social") && (
+          {selectedContentTypes.includes("AI Insight") && (
             <DashboardSection
               section="AI_INSIGHT"
               title="AI Insight of the Day"
