@@ -6,6 +6,12 @@ import {
   ContentTypeSelector,
 } from "../components/PreferenceFormSections";
 
+function Spinner() {
+  return (
+    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+  );
+}
+
 export default function Onboarding() {
   const navigate = useNavigate();
 
@@ -14,6 +20,8 @@ export default function Onboarding() {
     investorType: "",
     contentTypes: [],
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleCheckboxChange = (field, value) => {
     setForm((prev) => {
@@ -31,6 +39,7 @@ export default function Onboarding() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/onboarding`, {
@@ -52,6 +61,8 @@ export default function Onboarding() {
     } catch (err) {
       console.error(err);
       alert(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,9 +91,10 @@ export default function Onboarding() {
 
         <button
           type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded"
+          disabled={loading}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded flex justify-center items-center gap-2"
         >
-          Save & Continue
+          {loading ? <Spinner /> : "Save & Continue"}
         </button>
       </form>
     </div>

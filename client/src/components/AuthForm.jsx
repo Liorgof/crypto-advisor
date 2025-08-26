@@ -1,6 +1,12 @@
 import { useState } from "react";
 
-export default function AuthForm({ type = "login", onSubmit }) {
+function Spinner() {
+  return (
+    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+  );
+}
+
+export default function AuthForm({ type = "login", onSubmit, loading }) {
   const isSignup = type === "signup";
   const [form, setForm] = useState({ email: "", password: "", name: "" });
   const [error, setError] = useState("");
@@ -64,9 +70,10 @@ export default function AuthForm({ type = "login", onSubmit }) {
 
       <button
         type="submit"
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded"
+        disabled={loading}
+        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded flex justify-center items-center gap-2"
       >
-        {isSignup ? "Register" : "Login"}
+        {loading ? <Spinner /> : isSignup ? "Register" : "Login"}
       </button>
     </form>
   );
