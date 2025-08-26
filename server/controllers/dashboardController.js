@@ -15,13 +15,16 @@ exports.getDashboardData = async (req, res) => {
     const prefs = await prisma.preference.findUnique({ where: { userId } });
     if (!prefs) return res.status(404).json({ error: "Preferences not found" });
 
-    //Load latest votes per section
+    // Load latest votes per section (including content)
     const voteRows = await prisma.sectionVote.findMany({
       where: { userId },
-      select: { section: true, value: true },
+      select: { section: true, value: true, content: true },
     });
 
-    const votes = Object.fromEntries(voteRows.map((v) => [v.section, v.value]));
+    const votes = {};
+    for (const v of voteRows) {
+      votes[v.section] = { value: v.value, content: v.content };
+    }
 
     //Fetch past AI_INSIGHT votes for fine-tuning
     const aiVotes = await prisma.sectionVote.findMany({
@@ -67,7 +70,7 @@ exports.getDashboardData = async (req, res) => {
       aiInsight = await getAIInsight(prefs, liked, disliked);
     } catch (e) {
       console.error("getAIInsight failed:", e.message);
-      aiInsight = fallbackInsight(); // כמו שדיברנו קודם
+      aiInsight = fallbackInsight();
     }
 
     // Return all dashboard data
@@ -83,19 +86,17 @@ exports.voteForSection = async (req, res) => {
   const userId = req.userId;
   const { section, value, content } = req.body;
 
-  if (!userId || !section || typeof value !== "boolean") {
+  if (!userId || !section || typeof value !== "boolean" || !content) {
     return res.status(400).json({ error: "Invalid request" });
   }
-
-  const contentToSave = section === "AI_INSIGHT" ? content : null;
 
   try {
     const vote = await prisma.sectionVote.upsert({
       where: {
-        userId_section: { userId, section },
+        userId_section_content: { userId, section, content },
       },
-      update: { value, content: contentToSave },
-      create: { userId, section, value, content: contentToSave },
+      update: { value },
+      create: { userId, section, value, content },
     });
 
     res.json({ success: true, vote });
