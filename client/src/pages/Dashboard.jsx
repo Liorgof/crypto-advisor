@@ -82,7 +82,8 @@ export default function Dashboard() {
     );
   }
 
-  const { news, prices, aiInsight, memeUrl, votes } = data;
+  const { news, prices, aiInsight, memeUrl, votes, preferences } = data;
+  const selectedContentTypes = preferences?.contentTypes ?? [];
 
   const usingFallbackPrices = !Object.values(prices ?? {})?.[0]
     ?.last_updated_at;
@@ -95,63 +96,70 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold mb-6">Your Crypto Dashboard</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <DashboardSection
-            section="AI_INSIGHT"
-            title="AI Insight of the Day"
-            icon={<Brain size={20} />}
-            votes={votes}
-            onVote={vote}
-            content={aiInsight}
-            color="bg-purple-800"
-          >
-            <p>{aiInsight}</p>
-          </DashboardSection>
+          {selectedContentTypes.includes("Social") && (
+            <DashboardSection
+              section="AI_INSIGHT"
+              title="AI Insight of the Day"
+              icon={<Brain size={20} />}
+              votes={votes}
+              onVote={vote}
+              content={aiInsight}
+              color="bg-purple-800"
+            >
+              <p>{aiInsight}</p>
+            </DashboardSection>
+          )}
 
-          <DashboardSection
-            section="PRICE"
-            title="Coin Prices"
-            icon={<Coins size={20} />}
-          >
-            {usingFallbackPrices && (
-              <div className="text-yellow-400 text-sm mb-2">
-                Live data is temporarily unavailable. Showing fallback prices.
-              </div>
-            )}
+          {selectedContentTypes.includes("Charts") && (
+            <DashboardSection
+              section="PRICE"
+              title="Coin Prices"
+              icon={<Coins size={20} />}
+            >
+              {usingFallbackPrices && (
+                <div className="text-yellow-400 text-sm mb-2">
+                  Live data is temporarily unavailable. Showing fallback prices.
+                </div>
+              )}
+              <PriceList prices={prices} />
+            </DashboardSection>
+          )}
 
-            <PriceList prices={prices} />
-          </DashboardSection>
+          {selectedContentTypes.includes("Fun") && (
+            <DashboardSection
+              section="MEME"
+              title="Daily Meme"
+              icon={<Smile size={20} />}
+              votes={votes}
+              onVote={vote}
+              content={memeUrl}
+            >
+              <img
+                src={memeUrl}
+                alt="Meme"
+                className="w-full max-h-80 object-contain rounded"
+              />
+            </DashboardSection>
+          )}
 
-          <DashboardSection
-            section="MEME"
-            title="Daily Meme"
-            icon={<Smile size={20} />}
-            votes={votes}
-            onVote={vote}
-            content={memeUrl}
-          >
-            <img
-              src={memeUrl}
-              alt="Meme"
-              className="w-full max-h-80 object-contain rounded"
-            />
-          </DashboardSection>
-
-          <DashboardSection
-            section="NEWS"
-            title="Latest News"
-            icon={<Newspaper size={20} />}
-            votes={votes}
-            onVote={vote}
-            content={JSON.stringify(news)}
-          >
-            {usingFallbackNews && (
-              <div className="text-yellow-400 text-sm mb-2">
-                Live news feed is temporarily unavailable. Displaying fallback
-                content.
-              </div>
-            )}
-            <NewsList news={news} />
-          </DashboardSection>
+          {selectedContentTypes.includes("Market News") && (
+            <DashboardSection
+              section="NEWS"
+              title="Latest News"
+              icon={<Newspaper size={20} />}
+              votes={votes}
+              onVote={vote}
+              content={JSON.stringify(news)}
+            >
+              {usingFallbackNews && (
+                <div className="text-yellow-400 text-sm mb-2">
+                  Live news feed is temporarily unavailable. Displaying fallback
+                  content.
+                </div>
+              )}
+              <NewsList news={news} />
+            </DashboardSection>
+          )}
         </div>
       </div>
     </div>

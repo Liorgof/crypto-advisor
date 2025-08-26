@@ -74,7 +74,7 @@ exports.getDashboardData = async (req, res) => {
     }
 
     // Return all dashboard data
-    res.json({ news, prices, aiInsight, memeUrl, votes });
+    res.json({ news, prices, aiInsight, memeUrl, votes, preferences: prefs });
   } catch (err) {
     console.error("Dashboard error:", err.message);
     res.status(500).json({ error: "Failed to load dashboard data" });
