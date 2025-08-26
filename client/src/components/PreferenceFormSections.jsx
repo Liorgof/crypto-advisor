@@ -41,7 +41,7 @@ export function InvestorTypeSelector({ selected, onChange }) {
 }
 
 export function ContentTypeSelector({ selectedContent, onChange }) {
-  const types = ["Market News", "Charts", "Social", "Fun"];
+  const types = ["Market News", "Charts", "AI Insight", "Fun"];
   return (
     <div>
       <p className="font-semibold mb-2">
