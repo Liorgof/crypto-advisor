@@ -21,7 +21,17 @@ export default function Login() {
       localStorage.setItem("token", data.token);
       navigate("/dashboard");
     } catch (err) {
-      alert(err.message);
+      let message = "An error occurred. Please try again.";
+
+      if (err instanceof TypeError) {
+        // Usually happens when the server is unreachable
+        message =
+          "The site is currently unavailable. Please try again in a few minutes.";
+      } else if (err.message) {
+        message = err.message;
+      }
+
+      alert(message);
     } finally {
       setLoading(false);
     }

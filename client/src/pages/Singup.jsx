@@ -21,7 +21,16 @@ export default function Signup() {
       localStorage.setItem("token", data.token);
       navigate("/onboarding");
     } catch (err) {
-      alert(err.message);
+      let message = "An error occurred. Please try again.";
+
+      if (err instanceof TypeError) {
+        message =
+          "The site is currently unavailable. Please try again in a few minutes.";
+      } else if (err.message) {
+        message = err.message;
+      }
+
+      alert(message);
     } finally {
       setLoading(false);
     }
