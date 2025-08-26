@@ -84,6 +84,9 @@ export default function Dashboard() {
 
   const { news, prices, aiInsight, memeUrl, votes } = data;
 
+  const usingFallbackPrices = !Object.values(prices ?? {})?.[0]
+    ?.last_updated_at;
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Navbar />
@@ -108,6 +111,12 @@ export default function Dashboard() {
             title="Coin Prices"
             icon={<Coins size={20} />}
           >
+            {usingFallbackPrices && (
+              <div className="text-yellow-400 text-sm mb-2">
+                Live data is temporarily unavailable. Showing fallback prices.
+              </div>
+            )}
+
             <PriceList prices={prices} />
           </DashboardSection>
 
