@@ -12,10 +12,8 @@ A personalized crypto investor dashboard that curates daily content based on use
 - Dashboard includes 4 sections:
   1. Market News - via CryptoPanic API
   2. Coin Prices - via CoinGecko API
-     - In deployed version, CoinGecko is blocked due to CORS. Works locally.
   3. AI Insight of the Day - powered by OpenRouter / Hugging Face
   4. Crypto Meme - via Reddit or static fallback
-     - Reddit access is blocked in production; uses static JSON. Works locally.
 - Voting system for each section (stored in DB for future model training)
 
 ## Tech Stack
